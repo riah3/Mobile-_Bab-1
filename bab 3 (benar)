@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+
+// Custom Widget untuk item Grid
+class GridItem extends StatelessWidget {
+  final String imageUrl;
+  final String title;
+  
+  GridItem({required this.imageUrl, required this.title});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Image.network(imageUrl, width: 100, height: 100, fit: BoxFit.cover),
+        SizedBox(height: 10),
+        Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+}
+
+// Custom Widget untuk item List
+class ListItem extends StatelessWidget {
+  final String title;
+  final String description;
+  
+  ListItem({required this.title, required this.description});
+  
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.all(8),
+      leading: Icon(Icons.category),
+      title: Text(title),
+      subtitle: Text(description),
+      trailing: Icon(Icons.arrow_forward_ios),
+      onTap: () {
+        print('Item tapped');
+      },
+    );
+  }
+}
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'E-Commerce App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: HomePage(),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
+  final List<String> gridImages = [
+    'https://via.placeholder.com/150/0000FF/808080?Text=Product+1',
+    'https://via.placeholder.com/150/FF0000/FFFFFF?Text=Product+2',
+    'https://via.placeholder.com/150/008000/FFFFFF?Text=Product+3',
+    'https://via.placeholder.com/150/87CEEB/FFFFFF?Text=Product+4',
+  ];
+
+  final List<Map<String, String>> listItems = [
+    {'title': 'Item 1', 'description': 'Description for Item 1'},
+    {'title': 'Item 2', 'description': 'Description for Item 2'},
+    {'title': 'Item 3', 'description': 'Description for Item 3'},
+    {'title': 'Item 4', 'description': 'Description for Item 4'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('E-Commerce UI'),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Section 1: Banner / Image Section
+            Container(
+              width: double.infinity,
+              height: 250,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: NetworkImage('https://via.placeholder.com/800x250/0000FF/FFFFFF?Text=Banner'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Section 2: Grid Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text('Featured Products', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            SizedBox(height: 10),
+            GridView.builder(
+              padding: EdgeInsets.all(8),
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: gridImages.length,
+              itemBuilder: (context, index) {
+                return GridItem(imageUrl: gridImages[index], title: 'Product ${index + 1}');
+              },
+            ),
+            SizedBox(height: 20),
+
+            // Section 3: List Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text('Popular Categories', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            SizedBox(height: 10),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: listItems.length,
+              itemBuilder: (context, index) {
+                return ListItem(
+                  title: listItems[index]['title']!,
+                  description: listItems[index]['description']!,
+                );
+              },
+            ),
+            SizedBox(height: 20),
+
+            // Section 4: Action Button
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  print("Go to Cart");
+                },
+                icon: Icon(Icons.shopping_cart),
+                label: Text('Go to Cart'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  primary: Colors.blueAccent,
+                  onPrimary: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
