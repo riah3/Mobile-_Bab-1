@@ -1,0 +1,171 @@
+// Kelas ProdukDigital
+class ProdukDigital {
+  String namaProduk;
+  double harga;
+  String kategori;
+
+  ProdukDigital({
+    required this.namaProduk,
+    required this.harga,
+    required this.kategori,
+  });
+
+  // Metode untuk menerapkan diskon
+  double terapkanDiskon() {
+    if (kategori == "NetworkAutomation") {
+      return harga * 0.90; // Diskon 10% untuk kategori NetworkAutomation
+    }
+    return harga;
+  }
+}
+
+// Kelas Abstrak Karyawan
+abstract class Karyawan {
+  String nama;
+  int umur;
+  String peran;
+
+  Karyawan({
+    required this.nama,
+    required this.umur,
+    required this.peran,
+  });
+
+  // Metode abstrak bekerja()
+  void bekerja();
+}
+
+// Subkelas KaryawanTetap
+class KaryawanTetap extends Karyawan {
+  KaryawanTetap({
+    required String nama,
+    required int umur,
+    required String peran,
+  }) : super(nama: nama, umur: umur, peran: peran);
+
+  @override
+  void bekerja() {
+    print('$nama bekerja sebagai $peran dengan kontrak tetap.');
+  }
+}
+
+// Subkelas KaryawanKontrak
+class KaryawanKontrak extends Karyawan {
+  KaryawanKontrak({
+    required String nama,
+    required int umur,
+    required String peran,
+  }) : super(nama: nama, umur: umur, peran: peran);
+
+  @override
+  void bekerja() {
+    print('$nama bekerja sebagai $peran dengan kontrak kontrak.');
+  }
+}
+
+// Mixin Kinerja
+mixin Kinerja {
+  int produktivitas = 80; // Nilai awal produktivitas
+
+  void updateProduktivitas(int hari) {
+    if (hari >= 30) {
+      produktivitas += 5;
+      if (produktivitas > 85) produktivitas = 85;
+    }
+  }
+}
+
+// Subkelas Karyawan dengan mixin Kinerja
+class KaryawanDenganKinerja extends Karyawan with Kinerja {
+  KaryawanDenganKinerja({
+    required String nama,
+    required int umur,
+    required String peran,
+  }) : super(nama: nama, umur: umur, peran: peran);
+
+  @override
+  void bekerja() {
+    print('$nama bekerja sebagai $peran. Produktivitas: $produktivitas%');
+  }
+}
+
+// Enum FaseProyek
+enum FaseProyek { Perencanaan, Pengembangan, Evaluasi }
+
+class Proyek {
+  FaseProyek fase;
+
+  Proyek(this.fase);
+
+  void transisiFase(FaseProyek faseBaru) {
+    if (fase == FaseProyek.Perencanaan && faseBaru == FaseProyek.Pengembangan) {
+      fase = faseBaru;
+      print('Fase proyek sekarang adalah Pengembangan.');
+    } else if (fase == FaseProyek.Pengembangan && faseBaru == FaseProyek.Evaluasi) {
+      fase = faseBaru;
+      print('Fase proyek sekarang adalah Evaluasi.');
+    } else {
+      print('Transisi fase tidak valid!');
+    }
+  }
+}
+
+// Kelas Perusahaan dengan pembatasan jumlah karyawan aktif
+class Perusahaan {
+  List<Karyawan> karyawanAktif = [];
+  List<Karyawan> karyawanNonAktif = [];
+  static const int MAX_KARYAWAN_AKTIF = 20;
+
+  void tambahKaryawan(Karyawan karyawan) {
+    if (karyawanAktif.length < MAX_KARYAWAN_AKTIF) {
+      karyawanAktif.add(karyawan);
+      print('${karyawan.nama} telah ditambahkan sebagai karyawan aktif.');
+    } else {
+      print('Batas karyawan aktif tercapai. Tidak bisa menambahkan karyawan baru.');
+    }
+  }
+
+  void resignKaryawan(Karyawan karyawan) {
+    karyawanAktif.remove(karyawan);
+    karyawanNonAktif.add(karyawan);
+    print('${karyawan.nama} telah resign dan statusnya berubah menjadi non-aktif.');
+  }
+}
+
+// Implementasi untuk tugas tambahan: Program utama
+void main() {
+  // 1. Kelas ProdukDigital
+  var produk = ProdukDigital(namaProduk: 'Router A', harga: 1500, kategori: 'NetworkAutomation');
+  print('Harga setelah diskon: ${produk.terapkanDiskon()}');
+
+  // 2. Penggunaan Positional dan Named Arguments
+  var karyawanTetap = KaryawanTetap(nama: 'Budi', umur: 30, peran: 'Developer');
+  var karyawanKontrak = KaryawanKontrak(nama: 'Siti', umur: 25, peran: 'Tester');
+  karyawanTetap.bekerja();
+  karyawanKontrak.bekerja();
+
+  // 3. Mixin Kinerja untuk Produktivitas
+  var karyawanDenganKinerja = KaryawanDenganKinerja(nama: 'Andi', umur: 28, peran: 'Manager');
+  karyawanDenganKinerja.updateProduktivitas(30); // Mengupdate produktivitas setelah 30 hari
+  karyawanDenganKinerja.bekerja();
+
+  // 4. Enum FaseProyek
+  var proyek = Proyek(FaseProyek.Perencanaan);
+  proyek.transisiFase(FaseProyek.Pengembangan);  // Transisi fase valid
+  proyek.transisiFase(FaseProyek.Evaluasi); // Transisi fase valid
+  proyek.transisiFase(FaseProyek.Perencanaan);  // Transisi fase tidak valid
+
+  // 5. Mekanisme Pembatasan Jumlah Karyawan Aktif
+  var perusahaan = Perusahaan();
+  perusahaan.tambahKaryawan(karyawanTetap);
+  perusahaan.tambahKaryawan(karyawanKontrak);
+
+  // Tambah karyawan hingga batas maksimal
+  for (int i = 0; i < 20; i++) {
+    perusahaan.tambahKaryawan(KaryawanTetap(nama: 'Karyawan $i', umur: 25, peran: 'Staff'));
+  }
+
+  // Mengresign karyawan
+  perusahaan.resignKaryawan(karyawanTetap);
+  perusahaan.tambahKaryawan(KaryawanTetap(nama: 'Karyawan Baru', umur: 22, peran: 'Staff'));
+}
